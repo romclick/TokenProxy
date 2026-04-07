@@ -108,6 +108,47 @@ async def chat_completions(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Proxy Error: {str(e)}")
 
+# ==================== OpenRouter必填：/v1/completions 接口（透传上游） ====================
+@app.post("/v1/completions")
+async def completions(
+    request: dict,
+    authorization: str = Header(None)
+):
+    # 校验API密钥
+    if not authorization or authorization.replace("Bearer ", "") != YOUR_PROXY_API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+
+    headers = {
+        "Authorization": f"Bearer {UPSTREAM_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            # 自动转发到上游DeepSeek的/completions接口
+            upstream_completions_url = UPSTREAM_API_URL.replace("/chat/completions", "/completions")
+            response = await client.post(
+                url=upstream_completions_url,
+                headers=headers,
+                json=request
+            )
+            result = response.json()
+
+        # 自动计费日志
+        if "usage" in result:
+            input_tokens = result["usage"]["prompt_tokens"]
+            output_tokens = result["usage"]["completion_tokens"]
+            cost = (input_tokens * INPUT_COST + output_tokens * OUTPUT_COST) / 1_000_000
+            revenue = (input_tokens * INPUT_PRICE + output_tokens * OUTPUT_PRICE) / 1_000_000
+            profit = revenue - cost
+            print(f"📊 Completions调用日志 | 输入：{input_tokens} | 输出：{output_tokens}")
+            print(f"💰 利润：${profit:.4f}")
+
+        return result
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Proxy Error: {str(e)}")
+    
 # ==================== 前端页面 & 健康检查 ====================
 @app.get("/")
 async def root():
@@ -116,6 +157,10 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+@app.get("/privacy")
+async def privacy():
+    return FileResponse("privacy.html")
 
 if __name__ == "__main__":
     import uvicorn
