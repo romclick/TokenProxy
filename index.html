@@ -2,80 +2,123 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AI Chat API Proxy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TokenProxy - Affordable AI API for Developers</title>
     <style>
-        * {margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif;}
-        .container {max-width: 800px; margin: 50px auto; padding: 20px;}
-        .auth-box {margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 10px;}
-        .chat-box {border: 1px solid #eee; border-radius: 10px; padding: 20px; height: 400px; overflow-y: auto; margin-bottom: 20px;}
+        * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Arial, sans-serif;}
+        :root {--primary: #2563eb; --secondary: #1e40af; --light: #f8fafc; --dark: #1e293b;}
+        body {background: var(--light); color: var(--dark); line-height: 1.6;}
+        .container {max-width: 1000px; margin: 0 auto; padding: 20px;}
+        header {text-align: center; padding: 40px 0; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px;}
+        h1 {color: var(--primary); font-size: 2.5rem; margin-bottom: 10px;}
+        .subtitle {color: #64748b; font-size: 1.1rem;}
+        .pricing-card {background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; text-align: center;}
+        .pricing-card h2 {color: var(--dark); margin-bottom: 20px;}
+        .price-grid {display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 600px; margin: 0 auto;}
+        .price-item {padding: 15px; border-radius: 8px; background: #f1f5f9;}
+        .price-item .label {font-weight: 600; color: #64748b;}
+        .price-item .value {font-size: 1.5rem; font-weight: 700; color: var(--primary);}
+        .chat-section {background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px;}
+        .auth-box {margin-bottom: 20px;}
+        .auth-box input {width: 100%; padding: 12px 15px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem;}
+        .chat-box {border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; height: 400px; overflow-y: auto; margin-bottom: 20px; background: #fafafa;}
         .input-box {display: flex; gap: 10px;}
-        input {padding: 12px; border: 1px solid #eee; border-radius: 8px; font-size: 14px;}
-        #apiKeyInput {width: 100%;}
-        #userInput {flex: 1;}
-        button {padding: 12px 20px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer;}
-        .message {margin: 10px 0; padding: 10px; border-radius: 8px;}
-        .user {background: #007bff; color: white; text-align: right;}
-        .bot {background: #f5f5f5; text-align: left;}
+        #userInput {flex: 1; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem;}
+        button {padding: 15px 30px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: background 0.3s;}
+        button:hover {background: var(--secondary);}
+        .message {margin: 10px 0; padding: 12px 16px; border-radius: 8px; max-width: 80%;}
+        .user {background: var(--primary); color: white; text-align: right; margin-left: auto;}
+        .bot {background: #f1f5f9; color: var(--dark); text-align: left; margin-right: auto;}
+        .footer {text-align: center; padding: 30px 0; color: #64748b; font-size: 0.9rem;}
+        .footer a {color: var(--primary); text-decoration: none;}
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>Token出海API代理</h1>
-    <!-- 安全输入：用户手动填写API密钥，不存储在代码里 -->
-    <div class="auth-box">
-        <input type="password" id="apiKeyInput" placeholder="请输入你的API Key">
+    <div class="container">
+        <header>
+            <h1>TokenProxy</h1>
+            <p class="subtitle">Affordable, Reliable AI API for Global Developers | Up to 70% Cheaper than OpenAI</p>
+        </header>
+
+        <div class="pricing-card">
+            <h2>Transparent Pricing (USD / 1M Tokens)</h2>
+            <div class="price-grid">
+                <div class="price-item">
+                    <div class="label">Input Tokens</div>
+                    <div class="value">$0.11</div>
+                </div>
+                <div class="price-item">
+                    <div class="label">Output Tokens</div>
+                    <div class="value">$0.32</div>
+                </div>
+            </div>
+            <p style="margin-top: 20px; color: #64748b;">No hidden fees, pay-as-you-go, 99.9% uptime SLA</p>
+        </div>
+
+        <div class="chat-section">
+            <h2 style="margin-bottom: 20px; color: var(--dark);">Test Our API Instantly</h2>
+            <div class="auth-box">
+                <input type="password" id="apiKeyInput" placeholder="Enter your API Key to test">
+            </div>
+            <div class="chat-box" id="chatBox"></div>
+            <div class="input-box">
+                <input type="text" id="userInput" placeholder="Type your message...">
+                <button onclick="sendMessage()">Send Message</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 TokenProxy | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> | <a href="#">Contact Support</a></p>
+        </div>
     </div>
-    <div class="chat-box" id="chatBox"></div>
-    <div class="input-box">
-        <input type="text" id="userInput" placeholder="输入消息...">
-        <button onclick="sendMessage()">发送</button>
-    </div>
-</div>
 
-<script>
-    async function sendMessage() {
-        // 从输入框获取密钥，动态使用，不保存
-        const API_KEY = document.getElementById("apiKeyInput").value.trim();
-        const userInput = document.getElementById("userInput");
-        const message = userInput.value.trim();
+    <script>
+        async function sendMessage() {
+            const API_KEY = document.getElementById("apiKeyInput").value.trim();
+            const userInput = document.getElementById("userInput");
+            const message = userInput.value.trim();
 
-        if (!API_KEY) { alert("请先输入API Key"); return; }
-        if (!message) return;
+            if (!API_KEY) { alert("Please enter your API Key first"); return; }
+            if (!message) return;
 
-        const chatBox = document.getElementById("chatBox");
-        chatBox.innerHTML += `<div class="message user">${message}</div>`;
-        userInput.value = "";
+            const chatBox = document.getElementById("chatBox");
+            chatBox.innerHTML += `<div class="message user">${message}</div>`;
+            userInput.value = "";
 
-        try {
-            const response = await fetch("/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${API_KEY}`
-                },
-                body: JSON.stringify({
-                    model: "deepseek-chat",
-                    messages: [{role: "user", content: message}],
-                    temperature: 0.7
-                })
-            });
+            try {
+                const response = await fetch("/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: "deepseek-chat",
+                        messages: [{role: "user", content: message}],
+                        temperature: 0.7
+                    })
+                });
 
-            const data = await response.json();
-            if (response.status === 401) {
-                chatBox.innerHTML += `<div class="message bot">❌ API密钥无效</div>`;
-                return;
+                const data = await response.json();
+                if (response.status === 401) {
+                    chatBox.innerHTML += `<div class="message bot">❌ Invalid API Key</div>`;
+                    return;
+                }
+                if (response.status !== 200) {
+                    chatBox.innerHTML += `<div class="message bot">❌ Request failed: ${data.detail || "Unknown error"}</div>`;
+                    return;
+                }
+                const reply = data.choices[0].message.content;
+                chatBox.innerHTML += `<div class="message bot">${reply}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } catch (error) {
+                chatBox.innerHTML += `<div class="message bot">❌ Request failed: ${error.message}</div>`;
             }
-            const reply = data.choices[0].message.content;
-            chatBox.innerHTML += `<div class="message bot">${reply}</div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-        } catch (error) {
-            chatBox.innerHTML += `<div class="message bot">请求失败</div>`;
         }
-    }
 
-    document.getElementById("userInput").addEventListener("keypress", function(e) {
-        if (e.key === "Enter") sendMessage();
-    });
-</script>
+        document.getElementById("userInput").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") sendMessage();
+        });
+    </script>
 </body>
 </html>
