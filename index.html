@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Chat API Proxy</title>
+    <style>
+        * {margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif;}
+        .container {max-width: 800px; margin: 50px auto; padding: 20px;}
+        .auth-box {margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 10px;}
+        .chat-box {border: 1px solid #eee; border-radius: 10px; padding: 20px; height: 400px; overflow-y: auto; margin-bottom: 20px;}
+        .input-box {display: flex; gap: 10px;}
+        input {padding: 12px; border: 1px solid #eee; border-radius: 8px; font-size: 14px;}
+        #apiKeyInput {width: 100%;}
+        #userInput {flex: 1;}
+        button {padding: 12px 20px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer;}
+        .message {margin: 10px 0; padding: 10px; border-radius: 8px;}
+        .user {background: #007bff; color: white; text-align: right;}
+        .bot {background: #f5f5f5; text-align: left;}
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Token出海API代理</h1>
+    <!-- 安全输入：用户手动填写API密钥，不存储在代码里 -->
+    <div class="auth-box">
+        <input type="password" id="apiKeyInput" placeholder="请输入你的API Key">
+    </div>
+    <div class="chat-box" id="chatBox"></div>
+    <div class="input-box">
+        <input type="text" id="userInput" placeholder="输入消息...">
+        <button onclick="sendMessage()">发送</button>
+    </div>
+</div>
+
+<script>
+    async function sendMessage() {
+        // 从输入框获取密钥，动态使用，不保存
+        const API_KEY = document.getElementById("apiKeyInput").value.trim();
+        const userInput = document.getElementById("userInput");
+        const message = userInput.value.trim();
+
+        if (!API_KEY) { alert("请先输入API Key"); return; }
+        if (!message) return;
+
+        const chatBox = document.getElementById("chatBox");
+        chatBox.innerHTML += `<div class="message user">${message}</div>`;
+        userInput.value = "";
+
+        try {
+            const response = await fetch("/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: "deepseek-chat",
+                    messages: [{role: "user", content: message}],
+                    temperature: 0.7
+                })
+            });
+
+            const data = await response.json();
+            if (response.status === 401) {
+                chatBox.innerHTML += `<div class="message bot">❌ API密钥无效</div>`;
+                return;
+            }
+            const reply = data.choices[0].message.content;
+            chatBox.innerHTML += `<div class="message bot">${reply}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        } catch (error) {
+            chatBox.innerHTML += `<div class="message bot">请求失败</div>`;
+        }
+    }
+
+    document.getElementById("userInput").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") sendMessage();
+    });
+</script>
+</body>
+</html>
