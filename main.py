@@ -2,6 +2,7 @@ import os
 import json
 import httpx
 import time
+from urllib.parse import urlparse
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
@@ -31,6 +32,28 @@ INPUT_COST = float(os.getenv("INPUT_TOKEN_COST", 0.07))
 OUTPUT_COST = float(os.getenv("OUTPUT_TOKEN_COST", 0.21))
 INPUT_PRICE = float(os.getenv("INPUT_TOKEN_PRICE", 0.11))
 OUTPUT_PRICE = float(os.getenv("OUTPUT_TOKEN_PRICE", 0.32))
+
+# ==================== 数据库连接验证 ====================
+print("🔍 开始测试数据库连接...")
+db_url = os.getenv("DATABASE_URL")
+if db_url:
+    print("✅ DATABASE_URL 环境变量加载成功！")
+    try:
+        import psycopg2
+        url = urlparse(db_url)
+        conn = psycopg2.connect(
+            dbname=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            sslmode="require"
+        )
+        print("🎉 数据库连接成功！配置完全正确！")
+        conn.close()
+    except Exception as e:
+        print(f"❌ 数据库连接失败：{str(e)}")
+else:
+    print("❌ 未找到 DATABASE_URL 环境变量！")
 
 # ==================== OpenRouter 核心接口：模型列表（环境变量定价） ====================
 @app.get("/v1/models")
