@@ -1,120 +1,378 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TokenProxy - Affordable AI API for Developers</title>
+    <title>AetherCore | Next-Gen AI Inference Platform</title>
     <style>
-        * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Arial, sans-serif;}
-        :root {--primary: #2563eb; --secondary: #1e40af; --light: #f8fafc; --dark: #1e293b;}
-        body {background: var(--light); color: var(--dark); line-height: 1.6;}
-        .container {max-width: 1000px; margin: 0 auto; padding: 20px;}
-        header {text-align: center; padding: 40px 0; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px;}
-        h1 {color: var(--primary); font-size: 2.5rem; margin-bottom: 10px;}
-        .subtitle {color: #64748b; font-size: 1.1rem;}
-        .pricing-card {background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; text-align: center;}
-        .pricing-card h2 {color: var(--dark); margin-bottom: 20px;}
-        .price-grid {display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 600px; margin: 0 auto;}
-        .price-item {padding: 15px; border-radius: 8px; background: #f1f5f9;}
-        .price-item .label {font-weight: 600; color: #64748b;}
-        .price-item .value {font-size: 1.5rem; font-weight: 700; color: var(--primary);}
-        .chat-section {background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px;}
-        .auth-box {margin-bottom: 20px;}
-        .auth-box input {width: 100%; padding: 12px 15px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem;}
-        .chat-box {border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; height: 400px; overflow-y: auto; margin-bottom: 20px; background: #fafafa;}
-        .input-box {display: flex; gap: 10px;}
-        #userInput {flex: 1; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem;}
-        button {padding: 15px 30px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: background 0.3s;}
-        button:hover {background: var(--secondary);}
-        .message {margin: 10px 0; padding: 12px 16px; border-radius: 8px; max-width: 80%;}
-        .user {background: var(--primary); color: white; text-align: right; margin-left: auto;}
-        .bot {background: #f1f5f9; color: var(--dark); text-align: left; margin-right: auto;}
-        .footer {text-align: center; padding: 30px 0; color: #64748b; font-size: 0.9rem;}
-        .footer a {color: var(--primary); text-decoration: none;}
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a24;
+            --border-subtle: #2a2a3a;
+            --border-accent: #3a3a5a;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8a8a9a;
+            --text-muted: #5a5a6a;
+            --accent-primary: #00d4aa;
+            --accent-secondary: #00a8cc;
+            --accent-warm: #ff6b35;
+            --glow-cyan: rgba(0, 212, 170, 0.15);
+            --glow-orange: rgba(255, 107, 53, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .bg-grid {
+            position: absolute; inset: 0;
+            background-image: 
+                linear-gradient(rgba(0, 212, 170, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 170, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black 40%, transparent 100%);
+        }
+        .bg-gradient {
+            position: absolute; inset: 0;
+            background: 
+                radial-gradient(ellipse 80% 60% at 50% 0%, var(--glow-cyan) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 50% at 80% 80%, var(--glow-orange) 0%, transparent 40%);
+        }
+
+        .particle {
+            position: absolute; border-radius: 50%; background: var(--accent-primary);
+            opacity: 0.3; animation: float 20s infinite ease-in-out;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.3; }
+            25% { transform: translateY(-40px) translateX(20px) scale(1.1); opacity: 0.5; }
+            50% { transform: translateY(-20px) translateX(-15px) scale(0.9); opacity: 0.4; }
+            75% { transform: translateY(-50px) translateX(10px) scale(1.05); opacity: 0.35; }
+        }
+
+        .container { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; margin-bottom: 60px; border-bottom: 1px solid var(--border-subtle); }
+
+        .logo { display: flex; align-items: center; gap: 14px; }
+        .logo-icon {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+        }
+        .logo-icon svg { width: 24px; height: 24px; stroke: var(--bg-primary); }
+        .logo-text {
+            font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+
+        .nav { display: flex; gap: 32px; }
+        .nav a {
+            color: var(--text-secondary); text-decoration: none; font-size: 0.95rem; font-weight: 500;
+            transition: color 0.2s, transform 0.2s;
+        }
+        .nav a:hover { color: var(--text-primary); transform: translateY(-1px); }
+
+        .hero { text-align: center; padding: 80px 0; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px;
+            background: var(--glow-cyan); border: 1px solid var(--border-accent);
+            border-radius: 100px; font-size: 0.85rem; color: var(--accent-primary); font-weight: 500; margin-bottom: 28px;
+        }
+        .hero-badge::before {
+            content: ''; width: 6px; height: 6px; background: var(--accent-primary);
+            border-radius: 50%; animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 50%, var(--accent-secondary) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .hero .subtitle {
+            font-size: 1.25rem; color: var(--text-secondary); max-width: 540px; margin: 0 auto 40px; font-weight: 400;
+        }
+
+        .hero-cta { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px;
+            font-size: 1rem; font-weight: 600; border-radius: 12px; border: none; cursor: pointer;
+            transition: all 0.3s; text-decoration: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--bg-primary); box-shadow: 0 4px 20px rgba(0, 212, 170, 0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0, 212, 170, 0.4); }
+        .btn-secondary { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-accent); }
+        .btn-secondary:hover { border-color: var(--accent-primary); background: var(--bg-secondary); }
+
+        .pricing-section { margin: 100px 0; }
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-header h2 { font-size: 2rem; font-weight: 700; margin-bottom: 12px; }
+        .section-header p { color: var(--text-secondary); }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+
+        .pricing-card {
+            background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 16px;
+            padding: 32px; position: relative; overflow: hidden; transition: all 0.3s;
+        }
+        .pricing-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+        }
+        .pricing-card:hover { border-color: var(--border-accent); transform: translateY(-4px); }
+        .pricing-card.popular { border-color: var(--accent-primary); }
+        .popular-badge {
+            position: absolute; top: 16px; right: -35px; padding: 4px 36px; background: var(--accent-primary);
+            color: var(--bg-primary); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em; transform: rotate(45deg);
+        }
+        .pricing-card h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 8px; }
+        .pricing-card .description { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 24px; }
+        .price-display { display: flex; align-items: baseline; gap: 4px; margin-bottom: 24px; }
+        .price-display .dollars { font-size: 2rem; font-weight: 700; }
+        .price-display .input-price { color: var(--accent-primary); }
+        .price-display .output-price { color: var(--accent-warm); }
+        .price-display .per-unit { color: var(--text-secondary); font-size: 0.9rem; }
+        .price-details { display: grid; gap: 12px; margin-bottom: 24px; }
+        .price-row {
+            display: flex; justify-content: space-between; padding: 12px;
+            background: var(--bg-primary); border-radius: 8px; font-size: 0.9rem;
+        }
+        .price-row .label { color: var(--text-secondary); }
+        .price-row .value { font-weight: 600; }
+        .price-margin { color: var(--accent-primary) !important; }
+        .card-footer { font-size: 0.8rem; color: var(--text-muted); text-align: center; }
+
+        .test-section { margin: 100px 0; }
+        .test-card {
+            background: var(--bg-secondary); border: 1px solid var(--border-subtle);
+            border-radius: 20px; padding: 40px; max-width: 800px; margin: 0 auto;
+        }
+        .test-card h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
+        .test-card p { color: var(--text-secondary); margin-bottom: 24px; }
+        .api-key-input {
+            width: 100%; padding: 16px 20px; background: var(--bg-primary);
+            border: 1px solid var(--border-subtle); border-radius: 12px;
+            color: var(--text-primary); font-size: 1rem; margin-bottom: 20px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .api-key-input:focus {
+            outline: none; border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--glow-cyan);
+        }
+        .api-key-input::placeholder { color: var(--text-muted); }
+        .chat-container {
+            background: var(--bg-primary); border: 1px solid var(--border-subtle);
+            border-radius: 12px; height: 320px; overflow-y: auto; margin-bottom: 20px;
+        }
+        .chat-messages { padding: 16px; min-height: 320px; display: flex; flex-direction: column; gap: 12px; }
+        .chat-message { max-width: 80%; padding: 12px 16px; border-radius: 12px; font-size: 0.95rem; line-height: 1.5; }
+        .chat-message.user {
+            align-self: flex-end; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--bg-primary); border-bottom-right-radius: 4px;
+        }
+        .chat-message.bot {
+            align-self: flex-start; background: var(--bg-card); color: var(--text-primary);
+            border: 1px solid var(--border-subtle); border-bottom-left-radius: 4px;
+        }
+        .chat-input-area { display: flex; gap: 12px; }
+        #userInput {
+            flex: 1; padding: 14px 18px; background: var(--bg-primary);
+            border: 1px solid var(--border-subtle); border-radius: 12px;
+            color: var(--text-primary); font-size: 1rem; transition: border-color 0.2s;
+        }
+        #userInput:focus { outline: none; border-color: var(--accent-primary); }
+        #userInput::placeholder { color: var(--text-muted); }
+        .send-btn {
+            padding: 14px 28px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--bg-primary); border: none; border-radius: 12px;
+            font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .send-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3); }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        footer { margin-top: 100px; padding: 40px 0; border-top: 1px solid var(--border-subtle); text-align: center; }
+        .footer-links { display: flex; justify-content: center; gap: 32px; margin-bottom: 20px; }
+        .footer-links a {
+            color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: color 0.2s;
+        }
+        .footer-links a:hover { color: var(--text-primary); }
+        .copyright { color: var(--text-muted); font-size: 0.85rem; }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 20px; text-align: center; }
+            .nav { gap: 20px; }
+            .hero h1 { font-size: 2.2rem; }
+            .hero .subtitle { font-size: 1.1rem; }
+            .pricing-grid { grid-template-columns: 1fr; }
+            .test-card { padding: 24px; }
+            .footer-links { flex-direction: column; gap: 12px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .particle, .pricing-card, .btn { animation: none; transition: none; }
+        }
     </style>
 </head>
 <body>
+    <div class="bg-canvas">
+        <div class="bg-grid"></div>
+        <div class="bg-gradient"></div>
+    </div>
+
     <div class="container">
         <header>
-            <h1>TokenProxy</h1>
-            <p class="subtitle">Affordable, Reliable AI API for Global Developers | Up to 70% Cheaper than OpenAI</p>
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                </div>
+                <span class="logo-text">AetherCore</span>
+            </div>
+            <nav class="nav">
+                <a href="#pricing">Pricing</a>
+                <a href="#test">Test API</a>
+                <a href="#docs">Docs</a>
+            </nav>
         </header>
 
-        <div class="pricing-card">
-            <h2>Transparent Pricing (USD / 1M Tokens)</h2>
-            <div class="price-grid">
-                <div class="price-item">
-                    <div class="label">Input Tokens</div>
-                    <div class="value">$0.11</div>
-                </div>
-                <div class="price-item">
-                    <div class="label">Output Tokens</div>
-                    <div class="value">$0.32</div>
-                </div>
+        <section class="hero">
+            <div class="hero-badge">Platform Now Live</div>
+            <h1>High-Performance AI Inference<br>at Scale</h1>
+            <p class="subtitle">Enterprise-grade API proxy with optimized throughput, intelligent caching, and zero-downtime reliability for mission-critical applications.</p>
+            <div class="hero-cta">
+                <a href="#pricing" class="btn btn-primary">Get Started<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></a>
+                <a href="#test" class="btn btn-secondary">View Demo</a>
             </div>
-            <p style="margin-top: 20px; color: #64748b;">No hidden fees, pay-as-you-go, 99.9% uptime SLA</p>
-        </div>
+        </section>
 
-        <div class="chat-section">
-            <h2 style="margin-bottom: 20px; color: var(--dark);">Test Our API Instantly</h2>
-            <div class="auth-box">
-                <input type="password" id="apiKeyInput" placeholder="Enter your API Key to test">
+        <section class="pricing-section" id="pricing">
+            <div class="section-header">
+                <h2>Simple, Transparent Pricing</h2>
+                <p>Pay only for what you use. No hidden fees, no minimum commitments.</p>
             </div>
-            <div class="chat-box" id="chatBox"></div>
-            <div class="input-box">
-                <input type="text" id="userInput" placeholder="Type your message...">
-                <button onclick="sendMessage()">Send Message</button>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Input Tokens</h3>
+                    <p class="description">Text and prompt tokens processed</p>
+                    <div class="price-display">
+                        <span class="dollars input-price">$0.11</span>
+                        <span class="per-unit">/ 1M tokens</span>
+                    </div>
+                    <div class="price-details">
+                        <div class="price-row"><span class="label">Cost Basis</span><span class="value">$0.070 / 1M</span></div>
+                        <div class="price-row"><span class="label">Your Margin</span><span class="value price-margin">$0.040 / 1M</span></div>
+                    </div>
+                    <p class="card-footer">Volume discounts available above 100M tokens</p>
+                </div>
+                <div class="pricing-card popular">
+                    <div class="popular-badge">Most Popular</div>
+                    <h3>Output Tokens</h3>
+                    <p class="description">Generated completions and responses</p>
+                    <div class="price-display">
+                        <span class="dollars output-price">$0.32</span>
+                        <span class="per-unit">/ 1M tokens</span>
+                    </div>
+                    <div class="price-details">
+                        <div class="price-row"><span class="label">Cost Basis</span><span class="value">$0.210 / 1M</span></div>
+                        <div class="price-row"><span class="label">Your Margin</span><span class="value price-margin">$0.110 / 1M</span></div>
+                    </div>
+                    <p class="card-footer">Best value for most production workloads</p>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div class="footer">
-            <p>© 2026 TokenProxy | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> | <a href="#">Contact Support</a></p>
-        </div>
+        <section class="test-section" id="test">
+            <div class="section-header">
+                <h2>Try It Live</h2>
+                <p>Test the API instantly with your own key</p>
+            </div>
+            <div class="test-card">
+                <h3>API Playground</h3>
+                <p>Enter your API key below to send a test request to our DeepSeek Chat endpoint.</p>
+                <input type="password" id="apiKeyInput" class="api-key-input" placeholder="sk-your-api-key-here">
+                <div class="chat-container"><div class="chat-messages" id="chatBox"></div></div>
+                <div class="chat-input-area">
+                    <input type="text" id="userInput" placeholder="Type your message...">
+                    <button class="send-btn" onclick="sendMessage()" id="sendBtn">Send</button>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-links">
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="#terms">Terms of Service</a>
+                <a href="#docs">API Documentation</a>
+                <a href="#support">Support</a>
+            </div>
+            <p class="copyright">2026 AetherCore Platform. All rights reserved.</p>
+        </footer>
     </div>
 
     <script>
+        const canvas = document.querySelector('.bg-canvas');
+        for (let i = 0; i < 15; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            const s = Math.max(2, Math.random() * 6 + 2);
+            p.style.width = s + 'px'; p.style.height = s + 'px';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.top = Math.random() * 100 + '%';
+            p.style.animationDelay = Math.random() * 10 + 's';
+            p.style.animationDuration = (15 + Math.random() * 15) + 's';
+            p.style.background = Math.random() > 0.5 ? 'var(--accent-primary)' : 'var(--accent-secondary)';
+            canvas.appendChild(p);
+        }
+
         async function sendMessage() {
             const API_KEY = document.getElementById("apiKeyInput").value.trim();
             const userInput = document.getElementById("userInput");
-            const message = userInput.value.trim();
-
-            if (!API_KEY) { alert("Please enter your API Key first"); return; }
-            if (!message) return;
-
-            const chatBox = document.getElementById("chatBox");
-            chatBox.innerHTML += `<div class="message user">${message}</div>`;
-            userInput.value = "";
-
+            const msg = userInput.value.trim();
+            const btn = document.getElementById("sendBtn");
+            const box = document.getElementById("chatBox");
+            if (!API_KEY) { showError("Please enter your API Key first"); return; }
+            if (!msg) return;
+            box.innerHTML += `<div class="chat-message user">${eh(msg)}</div>`;
+            userInput.value = ""; box.scrollTop = box.scrollHeight; btn.disabled = true;
             try {
-                const response = await fetch("/v1/chat/completions", {
+                const r = await fetch("/v1/chat/completions", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${API_KEY}`
-                    },
-                    body: JSON.stringify({
-                        model: "deepseek-chat",
-                        messages: [{role: "user", content: message}],
-                        temperature: 0.7
-                    })
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` },
+                    body: JSON.stringify({ model: "deepseek-chat", messages: [{role: "user", content: msg}], temperature: 0.7 })
                 });
-
-                const data = await response.json();
-                if (response.status === 401) {
-                    chatBox.innerHTML += `<div class="message bot">❌ Invalid API Key</div>`;
-                    return;
-                }
-                if (response.status !== 200) {
-                    chatBox.innerHTML += `<div class="message bot">❌ Request failed: ${data.detail || "Unknown error"}</div>`;
-                    return;
-                }
-                const reply = data.choices[0].message.content;
-                chatBox.innerHTML += `<div class="message bot">${reply}</div>`;
-                chatBox.scrollTop = chatBox.scrollHeight;
-            } catch (error) {
-                chatBox.innerHTML += `<div class="message bot">❌ Request failed: ${error.message}</div>`;
-            }
+                const d = await r.json();
+                if (r.status === 401) { showError("Invalid API Key"); return; }
+                if (r.status !== 200) { showError(`Request failed: ${d.detail || "Unknown error"}`); return; }
+                box.innerHTML += `<div class="chat-message bot">${eh(d.choices[0].message.content)}</div>`;
+                box.scrollTop = box.scrollHeight;
+            } catch (e) { showError(`Request failed: ${e.message}`); }
+            finally { btn.disabled = false; }
         }
+
+        function showError(m) {
+            const b = document.getElementById("chatBox");
+            b.innerHTML += `<div class="chat-message bot" style="border-color: var(--accent-warm)">${eh(m)}</div>`;
+            b.scrollTop = b.scrollHeight;
+        }
+
+        function eh(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
 
         document.getElementById("userInput").addEventListener("keypress", function(e) {
             if (e.key === "Enter") sendMessage();
